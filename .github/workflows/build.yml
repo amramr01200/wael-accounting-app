@@ -14,12 +14,10 @@ jobs:
       - name: Checkout source code
         uses: actions/checkout@v4
 
-      # 1. فك ضغط ملف المشروع أولاً
       - name: Unzip project file
         run: |
           unzip wael_android_project.zip -d extracted_project
 
-      # 2. ترتيب الملفات ونقلها للجذر
       - name: Merge and Setup Project
         run: |
           APP_PATH=$(find extracted_project -name "app" -type d -print -quit)
@@ -29,33 +27,27 @@ jobs:
           fi
           PROJECT_ROOT=$(dirname "$APP_PATH")
           echo "Project root found at: $PROJECT_ROOT"
-          
           mv "$PROJECT_ROOT"/* . 2>/dev/null || true
           mv "$PROJECT_ROOT"/.* . 2>/dev/null || true
 
-      # 3. إعداد الجافا المتوافقة
       - name: Set up JDK 17
         uses: actions/setup-java@v4
         with:
           distribution: 'zulu'
           java-version: '17'
 
-      # 4. توليد إصدار Gradle متوافق ومستقر
       - name: Generate Missing Gradle Wrapper
         run: |
           gradle wrapper --gradle-version 8.0
 
-      # 5. تنظيف وتحديث الإعدادات تلقائياً لتجنب الأخطاء
       - name: Clean and Refresh Gradle Dependencies
         run: |
           chmod +x gradlew
           ./gradlew clean --refresh-dependencies || true
 
-      # 6. بناء التطبيق وتخطي التنبيهات
       - name: Build APK
         run: ./gradlew assembleDebug --stacktrace
 
-      # 7. رفع الملف الجاهز للتحميل
       - name: Upload APK Artifact
         uses: actions/upload-artifact@v4
         with:
