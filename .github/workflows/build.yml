@@ -36,9 +36,15 @@ jobs:
           distribution: 'zulu'
           java-version: '17'
 
-      - name: Generate Missing Gradle Wrapper
-        run: |
-          gradle wrapper --gradle-version 8.0
+      # 🔥 التعديل هنا: إعداد وتثبيت بيئة Gradle 8.0 بشكل رسمي
+      - name: Setup Gradle
+        uses: gradle/actions/setup-gradle@v4
+        with:
+          gradle-version: '8.0'
+
+      # 🔥 التعديل هنا: توليد ملف الـ wrapper باستخدام الأداة التي تم إعدادها
+      - name: Generate Gradle Wrapper
+        run: ./gradlew wrapper --gradle-version 8.0
 
       - name: Clean and Refresh Gradle Dependencies
         run: |
