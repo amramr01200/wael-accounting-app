@@ -36,22 +36,19 @@ jobs:
           distribution: 'zulu'
           java-version: '17'
 
+      # 🔥 التعديل الأساسي: نقوم بتهيئة البيئة فقط ونترك الخادم يكتشف الإصدار المناسب من ملفاتك تلقائياً
       - name: Setup Gradle
         uses: gradle/actions/setup-gradle@v4
-        with:
-          gradle-version: '8.0'
 
-      # تم تعديل الأمر هنا ليصبح gradle بدلاً من ./gradlew
-      - name: Generate Gradle Wrapper
-        run: gradle wrapper --gradle-version 8.0
-
-      - name: Clean and Refresh Gradle Dependencies
+      # تنظيف الذاكرة المؤقتة والاعتماد على الكود الخاص بك مباشرة
+      - name: Clean Project
         run: |
-          chmod +x gradlew
-          ./gradlew clean --refresh-dependencies || true
+          chmod +x gradlew 2>/dev/null || true
+          gradle clean || true
 
+      # بناء التطبيق بأمر Gradle العام المضمون
       - name: Build APK
-        run: ./gradlew assembleDebug --stacktrace
+        run: gradle assembleDebug --stacktrace
 
       - name: Upload APK Artifact
         uses: actions/upload-artifact@v4
